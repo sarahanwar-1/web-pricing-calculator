@@ -1,0 +1,13 @@
+const groups=[
+ {id:'service',title:'SERVICE',options:[['Design & development',0],['Design only',-100],['Development only',-75]]},
+ {id:'pages',title:'NUMBER OF PAGES',options:[['Landing page',0],['2 pages',120],['3 pages',240],['4 pages',360],['5 pages',480]]},
+ {id:'languages',title:'NUMBER OF LANGUAGES',options:[['1 language',0],['2 languages',130],['3 languages',260]]},
+ {id:'method',title:'BUILD METHOD',options:[['Coded',0],['No-code',-75]]},
+ {id:'animation',title:'ANIMATION LEVEL',options:[['No animation',0],['Light',75],['Medium',160],['Heavy',260]]}
+];
+const selections=Object.fromEntries(groups.map(g=>[g.id,0]));
+const root=document.querySelector('#questions');
+for(const group of groups){const section=document.createElement('section');section.className='question';const title=document.createElement('h3');title.innerHTML='<span>*</span> '+group.title;section.append(title);const choices=document.createElement('div');choices.className='options';choices.setAttribute('role','group');choices.setAttribute('aria-label',group.title);group.options.forEach(([label],index)=>{const btn=document.createElement('button');btn.type='button';btn.className='option';btn.textContent=label;btn.setAttribute('aria-pressed',index===0?'true':'false');btn.addEventListener('click',()=>{selections[group.id]=index;choices.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));update()});choices.append(btn)});section.append(choices);root.append(section)}
+const fmt=n=>'$'+n.toLocaleString('en-US');let summary='';
+function update(){let score=575;for(const group of groups){score+=group.options[selections[group.id]][1]}const low=Math.max(500,Math.min(1800,Math.round((score-75)/25)*25));const high=Math.max(low,Math.min(1800,Math.round((score+75)/25)*25));const category=high<=1000?'Simple website':'Custom website';document.querySelector('#price').textContent=fmt(low)+' – '+fmt(high);document.querySelector('#tier').textContent=category;summary='Website estimate: '+fmt(low)+' – '+fmt(high)+' USD\n'+groups.map(g=>g.title+': '+g.options[selections[g.id]][0]).join('\n');document.querySelector('#whatsapp').href='https://wa.me/18674459179?text='+encodeURIComponent('Hi Sarah! I used your website pricing calculator.\n\n'+summary+'\n\nI would like to discuss my project.')}update();
+document.querySelector('#copy').addEventListener('click',async()=>{const button=document.querySelector('#copy');try{await navigator.clipboard.writeText(summary);button.textContent='Copied!';setTimeout(()=>button.textContent='Copy estimate',1800)}catch{button.textContent='Copy unavailable';setTimeout(()=>button.textContent='Copy estimate',1800)}});document.querySelector('#year').textContent=new Date().getFullYear();
