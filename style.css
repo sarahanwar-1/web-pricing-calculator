@@ -1,0 +1,354 @@
+/* Website pricing calculator — Sarah Itafa
+   Same two themes as the portfolio, and the same saved choice:
+     :root                    = LIGHT theme (default): blush paper, navy ink, rose accent
+     :root[data-theme="dark"] = DARK theme: the navy version
+   The toggle in the header (script.js) sets data-theme on <html> and remembers it.
+   The block under "prefers-color-scheme" only matters if JavaScript is switched off.
+   Plus Jakarta Sans for text, Instrument Serif for the logo, accent words and the price. Everything is italic.
+
+   HOW IT FITS EVERY SCREEN
+   - Sizes are in rem and clamp(), so type and spacing grow and shrink smoothly (no hard jumps between phone / tablet / laptop).
+   - Nothing has a fixed width or height. Long words and longer translations wrap instead of pushing the page sideways.
+   - Margins use the phone's safe areas (notch, rounded corners), and spacing uses logical properties,
+     so the page also works if you set dir="rtl" on <html> for a right-to-left language.
+   - On very large screens the root font size steps up, so the whole calculator scales instead of floating in empty space.
+   Change colours and fonts in the tokens first. If you add a colour, add it to BOTH themes. */
+
+:root {
+  /* ===== LIGHT THEME (default) ===== */
+  color-scheme: light;
+
+  --bg: #f8edf2;              /* page: the blush */
+  --bg-2: #f2e2ea;
+  --surface: #ffffff;
+  --surface-2: #ecdbe4;
+  --card-bg: linear-gradient(165deg, #ffffff 0%, #fdf4f8 62%);   /* the calculator card */
+  --option-bg: rgba(248, 237, 242, .7);                          /* an unselected option */
+  --estimate-bg: #f8edf2;                                        /* the box that shows the price */
+  --line: #d3d9f0;
+  --line-strong: #aab4de;
+
+  --text: #0b1230;            /* headings, key text (the navy as ink) */
+  --soft: #34406e;            /* body copy */
+  --muted: #4f5b8a;           /* captions, labels */
+  --h1: var(--text);          /* the big heading and the price */
+
+  --accent: #e0457f;          /* rose for lines and big display words */
+  --accent-hi: #b8235f;       /* deeper rose for small text and links (5:1 on the blush) */
+  --accent-lo: #ee5f95;
+  --accent-rgb: 224, 69, 127;
+  --accent-line: rgba(184, 35, 95, .38);
+  --ice: #3a4bc0;             /* secondary: tags */
+  --ice-soft: rgba(58, 75, 192, .07);
+  --ice-line: rgba(58, 75, 192, .3);
+
+  --fill: #b8235f;            /* solid rose behind white text */
+  --accent-ink: #ffffff;      /* text that sits on --fill */
+  --btn-bg: linear-gradient(135deg, #c92c6b 0%, #b8235f 55%, #9e1a50 100%);
+  --btn-ink: #ffffff;
+  --btn-chip: #ffffff;        /* the round arrow inside a button */
+  --btn-chip-ink: #b8235f;
+  --btn-chip-hover: #0b1230;
+  --btn-chip-hover-ink: #ffffff;
+  --btn-hl: rgba(255, 255, 255, .25);
+  --btn-shadow: 0 10px 28px -12px rgba(184, 35, 95, .55);
+  --btn-shadow-hover: 0 18px 36px -14px rgba(184, 35, 95, .6);
+  --option-shadow: 0 10px 24px -12px rgba(184, 35, 95, .6);
+
+  --shadow: 0 30px 60px -32px rgba(11, 18, 48, .35);
+  --glow-1: rgba(224, 69, 127, .13);     /* soft glows behind the page */
+  --glow-2: rgba(58, 75, 192, .09);
+  --est-glow: rgba(224, 69, 127, .16);   /* glow in the corner of the price box */
+
+  --font-body: "Plus Jakarta Sans", Inter, ui-sans-serif, -apple-system, "Segoe UI", Arial, sans-serif;
+  --font-serif: "Instrument Serif", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --ease: cubic-bezier(.22, .8, .3, 1);
+
+  --shell: 54rem;             /* widest the content gets before it centres */
+  --gutter: clamp(16px, 4vw, 32px);
+
+  font-family: var(--font-body);
+  color: var(--soft);
+  font-synthesis: none;
+}
+
+/* ===== DARK THEME, when the device is dark and no choice has been saved (JavaScript off) ===== */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --bg: #070a1a;
+    --bg-2: #0b1230;
+    --surface: #0f1840;
+    --surface-2: #17235a;
+    --card-bg: linear-gradient(165deg, #17235a 0%, #0f1840 55%);
+    --option-bg: rgba(7, 10, 26, .55);
+    --estimate-bg: rgba(7, 10, 26, .6);
+    --line: #1c2954;
+    --line-strong: #2f3f78;
+
+    --text: #eaf0ff;
+    --soft: #c8d1ef;
+    --muted: #93a0cc;
+    --h1: #ffffff;
+
+    --accent: #ff7fae;
+    --accent-hi: #ffa3c4;
+    --accent-lo: #f2649a;
+    --accent-rgb: 255, 127, 174;
+    --accent-line: rgba(255, 127, 174, .42);
+    --ice: #a9b8ff;
+    --ice-soft: rgba(169, 184, 255, .1);
+    --ice-line: rgba(169, 184, 255, .3);
+
+    --fill: #ff7fae;
+    --accent-ink: #2d0615;
+    --btn-bg: linear-gradient(135deg, #ffa3c4 0%, #ff7fae 55%, #f2649a 100%);
+    --btn-ink: #2d0615;
+    --btn-chip: #2d0615;
+    --btn-chip-ink: #ffa3c4;
+    --btn-chip-hover: #ffffff;
+    --btn-chip-hover-ink: #2d0615;
+    --btn-hl: rgba(255, 255, 255, .45);
+    --btn-shadow: 0 10px 28px -12px rgba(255, 127, 174, .75);
+    --btn-shadow-hover: 0 18px 36px -14px rgba(255, 127, 174, .85);
+    --option-shadow: 0 10px 24px -12px rgba(255, 127, 174, .8);
+
+    --shadow: 0 30px 60px -32px rgba(0, 0, 0, .85);
+    --glow-1: rgba(255, 127, 174, .15);
+    --glow-2: rgba(80, 90, 220, .14);
+    --est-glow: rgba(255, 127, 174, .22);
+  }
+}
+
+/* ===== DARK THEME: the navy version (the toggle sets this) ===== */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #070a1a;
+  --bg-2: #0b1230;
+  --surface: #0f1840;
+  --surface-2: #17235a;
+  --card-bg: linear-gradient(165deg, #17235a 0%, #0f1840 55%);
+  --option-bg: rgba(7, 10, 26, .55);
+  --estimate-bg: rgba(7, 10, 26, .6);
+  --line: #1c2954;
+  --line-strong: #2f3f78;
+
+  --text: #eaf0ff;
+  --soft: #c8d1ef;
+  --muted: #93a0cc;
+  --h1: #ffffff;
+
+  --accent: #ff7fae;
+  --accent-hi: #ffa3c4;
+  --accent-lo: #f2649a;
+  --accent-rgb: 255, 127, 174;
+  --accent-line: rgba(255, 127, 174, .42);
+  --ice: #a9b8ff;
+  --ice-soft: rgba(169, 184, 255, .1);
+  --ice-line: rgba(169, 184, 255, .3);
+
+  --fill: #ff7fae;
+  --accent-ink: #2d0615;
+  --btn-bg: linear-gradient(135deg, #ffa3c4 0%, #ff7fae 55%, #f2649a 100%);
+  --btn-ink: #2d0615;
+  --btn-chip: #2d0615;
+  --btn-chip-ink: #ffa3c4;
+  --btn-chip-hover: #ffffff;
+  --btn-chip-hover-ink: #2d0615;
+  --btn-hl: rgba(255, 255, 255, .45);
+  --btn-shadow: 0 10px 28px -12px rgba(255, 127, 174, .75);
+  --btn-shadow-hover: 0 18px 36px -14px rgba(255, 127, 174, .85);
+  --option-shadow: 0 10px 24px -12px rgba(255, 127, 174, .8);
+
+  --shadow: 0 30px 60px -32px rgba(0, 0, 0, .85);
+  --glow-1: rgba(255, 127, 174, .15);
+  --glow-2: rgba(80, 90, 220, .14);
+  --est-glow: rgba(255, 127, 174, .22);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  position: relative; isolation: isolate;
+  margin: 0;
+  min-height: 100vh; min-height: 100dvh;
+  background: var(--bg);
+  font-family: var(--font-body); font-style: italic; font-size: 1rem; line-height: 1.65;
+  overflow-wrap: anywhere;                 /* a long word or translation wraps instead of widening the page */
+  -webkit-font-smoothing: antialiased;
+}
+/* soft glows behind everything */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(640px circle at 90% -6%, var(--glow-1), transparent 62%),
+    radial-gradient(520px circle at 0% 100%, var(--glow-2), transparent 65%);
+}
+::selection { background: var(--fill); color: var(--accent-ink); }
+:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 3px; }
+h1, h2, h3, p { margin: 0; }
+
+.shell {
+  width: 100%; max-width: var(--shell); margin-inline: auto;
+  padding-block: clamp(10px, 2.5vw, 24px) calc(clamp(28px, 5vw, 48px) + env(safe-area-inset-bottom, 0px));
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+}
+
+/* ---------- Header ---------- */
+.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; padding-block: 8px clamp(24px, 5vw, 44px); }
+.brand { display: inline-flex; align-items: baseline; gap: 2px; text-decoration: none; color: var(--text); font-family: var(--font-serif); font-size: clamp(1.75rem, 1.5rem + 1vw, 2.125rem); font-weight: 400; line-height: 1; letter-spacing: -.01em; }
+.brand span { color: var(--accent); }
+.brand small { margin-inline-start: 10px; font-family: var(--font-body); font-size: .8125rem; font-weight: 600; letter-spacing: 0; color: var(--muted); }
+.top-end { display: flex; align-items: center; gap: 14px; min-width: 0; margin-inline-start: auto; }
+.eyebrow { min-width: 0; text-align: end; font-size: .72rem; font-weight: 700; letter-spacing: .16em; line-height: 1.5; color: var(--accent-hi); }
+
+/* Light / dark switch: shows the moon in the light theme and the sun in the dark one (same as the portfolio). */
+.theme-toggle {
+  position: relative; flex: none; display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0;
+  color: var(--text); background: transparent; border: 1px solid var(--line-strong); border-radius: 50%; cursor: pointer;
+  transition: background .25s, color .25s, border-color .25s;
+}
+.theme-toggle svg { grid-area: 1 / 1; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: opacity .3s, rotate .55s var(--ease), scale .55s var(--ease); }
+.theme-toggle .icon-sun { opacity: 0; rotate: -90deg; scale: .5; }
+:root[data-theme="dark"] .theme-toggle .icon-sun { opacity: 1; rotate: 0deg; scale: 1; }
+:root[data-theme="dark"] .theme-toggle .icon-moon { opacity: 0; rotate: 90deg; scale: .5; }
+@media (hover: hover) and (pointer: fine) {
+  .theme-toggle:hover { border-color: var(--accent); color: var(--accent-hi); }
+}
+
+/* ---------- Intro ---------- */
+.intro { text-align: center; margin-bottom: clamp(24px, 4vw, 34px); }
+.pill { display: inline-flex; align-items: center; gap: 12px; font-size: .75rem; font-weight: 700; letter-spacing: .16em; line-height: 1.5; color: var(--accent-hi); }
+.pill::before, .pill::after { content: ""; flex: none; width: 28px; height: 1px; background: var(--accent); }
+.intro h1 { margin-block: 20px 16px; font-size: clamp(2.05rem, 7.2vw, 3.875rem); font-weight: 800; line-height: 1.05; letter-spacing: -.045em; color: var(--h1); text-wrap: balance; }
+.intro h1 span { font-family: var(--font-serif); font-weight: 400; font-size: 1.16em; line-height: 1; letter-spacing: -.01em; color: var(--accent); }
+.intro p { max-width: 33rem; margin-inline: auto; font-size: clamp(.98rem, .93rem + .25vw, 1.0625rem); line-height: 1.75; color: var(--soft); text-wrap: pretty; }
+
+/* ---------- Calculator card ---------- */
+.calculator {
+  position: relative; overflow: hidden;
+  padding: clamp(1.125rem, 5vw, 2.75rem);
+  background: var(--card-bg);
+  border: 1px solid var(--line-strong); border-radius: clamp(22px, 4vw, 30px);
+  box-shadow: var(--shadow);
+}
+.calchead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px 16px; margin-bottom: clamp(22px, 4vw, 32px); }
+.calchead > div { flex: 1 1 14rem; min-width: 0; }
+.calchead h2 { margin-bottom: 8px; font-size: clamp(1.375rem, 1.15rem + 1.2vw, 1.75rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.15; color: var(--text); }
+.calchead p { font-size: .90625rem; color: var(--muted); }
+.currency { flex: none; padding: 8px 14px; font-size: .75rem; font-weight: 700; letter-spacing: .06em; white-space: nowrap; color: var(--ice); background: var(--ice-soft); border: 1px solid var(--ice-line); border-radius: 999px; }
+
+/* ---------- Questions and options ---------- */
+.question { margin-bottom: clamp(22px, 3.5vw, 28px); }
+.question h3 { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-size: .72rem; font-weight: 700; letter-spacing: .16em; line-height: 1.5; color: var(--accent-hi); }
+.question h3::before { content: ""; flex: none; width: 24px; height: 1px; background: var(--accent); }
+.options { display: flex; flex-wrap: wrap; gap: 10px; }
+.option {
+  max-width: 100%; min-height: 2.875rem; padding: .6rem 1.25rem;
+  font-family: var(--font-body); font-style: italic; font-size: .875rem; font-weight: 600; line-height: 1.35; text-align: center; color: var(--soft);
+  background: var(--option-bg); border: 1px solid var(--line-strong); border-radius: 1.45rem; cursor: pointer;
+  transition: background .25s, border-color .25s, color .25s, transform .25s var(--ease), box-shadow .25s;
+}
+.option[aria-pressed="true"] {
+  color: var(--btn-ink); font-weight: 700; border-color: transparent;
+  background: var(--btn-bg);
+  box-shadow: var(--option-shadow), inset 0 1px 0 var(--btn-hl);
+}
+.option[aria-pressed="true"]::before { content: "✓"; margin-inline-end: 8px; font-style: normal; }
+@media (hover: hover) and (pointer: fine) {
+  .option:hover { border-color: var(--accent); color: var(--h1); transform: translateY(-2px); }
+  .option[aria-pressed="true"]:hover { color: var(--btn-ink); }
+}
+
+/* ---------- Estimate ---------- */
+.estimate {
+  position: relative; overflow: hidden;
+  margin-top: clamp(26px, 5vw, 36px); padding: clamp(1.5rem, 4.5vw, 2.5rem) clamp(1rem, 4vw, 2rem); text-align: center;
+  background: var(--estimate-bg); border: 1px solid var(--line-strong); border-radius: clamp(18px, 3.5vw, 24px);
+}
+.estimate::after { content: ""; position: absolute; inset-inline-end: -70px; top: -70px; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle, var(--est-glow), transparent 68%); pointer-events: none; }
+.estimate > * { position: relative; z-index: 1; }
+.estimate-label { display: block; font-size: .72rem; font-weight: 700; letter-spacing: .16em; line-height: 1.5; color: var(--accent-hi); }
+.price { margin-block: 14px 12px; font-family: var(--font-serif); font-size: clamp(2.4rem, 9vw, 5.25rem); font-weight: 400; line-height: 1.02; letter-spacing: -.02em; color: var(--h1); font-variant-numeric: tabular-nums; text-wrap: balance; }
+.tier { display: inline-block; max-width: 100%; margin: 0; padding: 4px 16px; font-size: .8125rem; font-weight: 700; color: var(--ice); background: var(--ice-soft); border: 1px solid var(--ice-line); border-radius: 999px; }
+.disclaimer { max-width: 31rem; margin: 22px auto 26px; font-size: .84375rem; line-height: 1.75; color: var(--muted); text-wrap: pretty; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+
+/* buttons: pill with a round arrow chip */
+.primary, .secondary {
+  position: relative; isolation: isolate; overflow: hidden;
+  flex: 1 1 14rem; max-width: 20rem; min-width: 0;
+  display: inline-flex; align-items: center; justify-content: space-between; gap: 14px;
+  min-height: 3.5rem; border-radius: 999px;
+  font-family: var(--font-body); font-style: italic; font-size: .9375rem; font-weight: 700; line-height: 1.25; text-align: start; text-decoration: none; cursor: pointer;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease), color .3s, border-color .3s, background-size .45s var(--ease);
+}
+.primary {
+  padding: 8px 8px 8px 26px; color: var(--btn-ink); border: 1px solid transparent;
+  background: var(--btn-bg);
+  box-shadow: var(--btn-shadow), inset 0 1px 0 var(--btn-hl);
+}
+.primary .label { min-width: 0; }
+.primary .chip {
+  display: inline-grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 50%;
+  background: var(--btn-chip); color: var(--btn-chip-ink); font-size: 1.0625rem; font-style: normal; line-height: 1;
+  transition: transform .35s var(--ease), background .3s, color .3s;
+}
+.secondary {
+  justify-content: center; padding: 8px 28px; text-align: center; color: var(--text); border: 1px solid var(--line-strong);
+  background: linear-gradient(var(--fill), var(--fill)) no-repeat left center / 0% 100%;
+}
+.primary:active, .secondary:active { transform: translateY(1px); }
+@media (hover: hover) and (pointer: fine) {
+  .primary:hover { transform: translateY(-3px); box-shadow: var(--btn-shadow-hover), inset 0 1px 0 var(--btn-hl); }
+  .primary:hover .chip { transform: rotate(45deg); background: var(--btn-chip-hover); color: var(--btn-chip-hover-ink); }
+  .secondary:hover { background-size: 100% 100%; color: var(--accent-ink); border-color: var(--fill); transform: translateY(-3px); }
+}
+
+/* ---------- Footer ---------- */
+footer { padding: 28px 4px 0; text-align: center; font-size: .8125rem; line-height: 1.9; color: var(--muted); }
+footer a { margin-inline-start: 8px; white-space: nowrap; font-weight: 700; color: var(--accent-hi); text-decoration: none; border-bottom: 1px solid var(--accent-line); }
+footer a:hover { color: var(--h1); border-color: var(--h1); }
+
+/* ---------- Every screen size ---------- */
+/* phones */
+@media (max-width: 30em) {
+  .eyebrow { max-width: 8.5rem; font-size: .625rem; }
+  .option { padding-inline: 1rem; font-size: .84375rem; }
+}
+/* very small phones (about 320px and under): the eyebrow gives way to the logo and the switch */
+@media (max-width: 21em) {
+  .eyebrow { display: none; }
+  .brand small { display: none; }
+  .option { padding-inline: .85rem; }
+  .primary { padding-inline-start: 20px; }
+}
+/* phones turned sideways, or any short window: tighter vertical rhythm so more of the page is in view */
+@media (max-height: 30em) and (orientation: landscape) {
+  .top { padding-bottom: 14px; }
+  .intro { margin-bottom: 18px; }
+  .intro h1 { margin-block: 12px 10px; }
+  .estimate { margin-top: 20px; }
+}
+/* big monitors and TVs: scale the whole calculator up instead of leaving it small in the middle */
+@media (min-width: 100em) { html { font-size: 112.5%; } }
+@media (min-width: 137.5em) { html { font-size: 131.25%; } }
+@media (min-width: 160em) { html { font-size: 150%; } }
+
+/* theme change: the ripple from the button (see script.js), or a quick fade where View Transitions don't exist */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 2; }
+.theme-fade, .theme-fade *, .theme-fade *::before, .theme-fade *::after { transition: background-color .4s, color .4s, border-color .4s, box-shadow .4s !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+/* Windows high-contrast mode: keep the selected option obvious without colour */
+@media (forced-colors: active) {
+  .option[aria-pressed="true"] { border: 2px solid Highlight; }
+}
